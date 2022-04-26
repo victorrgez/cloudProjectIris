@@ -14,7 +14,7 @@ class IrisModel:
         self.numbersToVarieties = {}
         for key, value in self.varietiesToNumbers.items():
             self.numbersToVarieties[value] = key
-        self.model = keras.models.load_model("src/iris.h5")
+        self.model = keras.models.load_model("../src/iris.h5")
 
     def makePrediction(self, features):
         """
@@ -26,7 +26,10 @@ class IrisModel:
         Input (list of Floats):
          [SepalLength, SepalWidth, PetalLength, PetalWidth)
         """
+
         predictions = self.model.predict([features])
         predictedFlower = self.numbersToVarieties[np.argmax(predictions)]
-        confidence = np.max(predictions) * 100
+        confidence = np.round(np.max(predictions) * 100, 2)
         return (predictedFlower, confidence)
+
+
