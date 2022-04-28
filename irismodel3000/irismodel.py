@@ -14,7 +14,7 @@ class IrisModel:
         self.numbersToVarieties = {}
         for key, value in self.varietiesToNumbers.items():
             self.numbersToVarieties[value] = key
-        self.model = keras.models.load_model("../src/iris.h5")
+        self.model = keras.models.load_model("iris.h5")
 
     def makePrediction(self, features):
         """
