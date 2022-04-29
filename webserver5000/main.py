@@ -2,8 +2,17 @@ from flask import Flask, request, render_template
 import os
 import requests
 import json
+import pymysql
 
 app = Flask(__name__)
+connection = pymysql.connect(
+  host="localhost",
+  user="webapp",
+  password="webapp",
+  database="irisdatabase"
+)
+
+cursor = connection.cursor()
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -22,7 +31,15 @@ def iris():
         response = requests.post("http://localhost:3000", data=json.dumps(features), headers=headers)
 
         if response.json()['validData']:
-            return render_template("results.html", data=response.json())
+            try:
+                data=response.json()                
+                templateQuery = f'INSERT INTO iristable (sepalLength, sepalWidth, petalLength, petalWidth, predictedFlower, confidence) VALUES({features["sepalLength"]}, {features["sepalWidth"]}, {features["petalLength"]}, {features["petalWidth"]}, \'{data["predictedFlower"]}\', {data["confidence"]});'
+                cursor.execute(templateQuery)
+                connection.commit()
+            except Exception as e:
+                print (f" There was an error when executing the query {e}")
+
+            return render_template("results.html", data=data)
         else:
             return render_template("wrongInput.html")
 

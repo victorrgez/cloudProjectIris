@@ -9,9 +9,10 @@ connection = pymysql.connect(
 
 cursor = connection.cursor()
 
-values = [1.0, 2.0, 3.0, 4.0]
+features = {"sepalLength":1.0, "sepalWidth":2.0, "petalLength":3.0, "petalWidth":4.0}
+data={"predictedFlower":"Virginica", "confidence":3.25}
 
-templateQuery = f'INSERT INTO iristable (sepalLength, sepalWidth, petalLength, petalWidth) VALUES({values[0]}, {values[1]}, {values[2]}, {values[3]});'
+templateQuery = f'INSERT INTO iristable (sepalLength, sepalWidth, petalLength, petalWidth, predictedFlower, confidence) VALUES({features["sepalLength"]}, {features["sepalWidth"]}, {features["petalLength"]}, {features["petalWidth"]}, \'{data["predictedFlower"]}\', {data["confidence"]});'
 
 
 try:
