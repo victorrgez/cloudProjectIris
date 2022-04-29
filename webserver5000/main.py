@@ -6,13 +6,25 @@ import pymysql
 
 app = Flask(__name__)
 connection = pymysql.connect(
-  host="localhost",
-  user="webapp",
-  password="webapp",
-  database="irisdatabase"
+    host="localhost",
+    user="webapp",
+    password="webapp",
+    database="irisdatabase"
 )
 
 cursor = connection.cursor()
+
+
+@app.route("/database", methods=["GET"])
+def showlastresults():
+    try:
+        lastResultsQuery = 'SELECT * from irisdatabase.iristable ORDER BY ID DESC;'
+        cursor.execute(lastResultsQuery)
+        connection.commit()
+        results = cursor.fetchall()
+    except Exception as e:
+        print(f" There was an error when executing the query {e}")
+    return render_template("lastresults.html", results = results)
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -26,18 +38,19 @@ def iris():
         sepalWidth = request.form.get("sepalWidth", "-1.0")
         petalLength = request.form.get("petalLength", "-1.0")
         petalWidth = request.form.get("petalWidth", "-1.0")
-        features = {"sepalLength": sepalLength, "sepalWidth": sepalWidth, "petalLength": petalLength, "petalWidth": petalWidth}
+        features = {"sepalLength": sepalLength, "sepalWidth": sepalWidth, "petalLength": petalLength,
+                    "petalWidth": petalWidth}
         headers = {"Content-Type": "application/json"}
         response = requests.post("http://localhost:3000", data=json.dumps(features), headers=headers)
 
         if response.json()['validData']:
             try:
-                data=response.json()                
-                templateQuery = f'INSERT INTO iristable (sepalLength, sepalWidth, petalLength, petalWidth, predictedFlower, confidence) VALUES({features["sepalLength"]}, {features["sepalWidth"]}, {features["petalLength"]}, {features["petalWidth"]}, \'{data["predictedFlower"]}\', {data["confidence"]});'
+                data = response.json()
+                templateQuery = f'INSERT INTO irisdatabase.iristable (sepalLength, sepalWidth, petalLength, petalWidth, predictedFlower, confidence) VALUES({features["sepalLength"]}, {features["sepalWidth"]}, {features["petalLength"]}, {features["petalWidth"]}, \'{data["predictedFlower"]}\', {data["confidence"]});'
                 cursor.execute(templateQuery)
                 connection.commit()
             except Exception as e:
-                print (f" There was an error when executing the query {e}")
+                print(f" There was an error when executing the query {e}")
 
             return render_template("results.html", data=data)
         else:
