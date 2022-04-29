@@ -5,8 +5,17 @@
     <title>Last predictions</title>
 </head>
 <body>
+<form action="/" method = "GET">
+    <p><input type = "submit" value = "Go to main page" /></p>
+</form>
+
+<h3>ID&emsp;&emsp;SepalLength&emsp;SepalWidth&emsp;PetalLength&emsp;PetalWidth&emsp;PredictedFlower&emsp;Confidence(%)</h3>
 {% for prediction in results %}
-    <p>{{prediction}}</p>
+    <p><h3>
+    {% for variable in prediction%}
+        {{variable}}&emsp;&emsp;&emsp;&emsp;&emsp;
+    {% endfor %}
+    </h3></p>
 {% endfor %}
 </body>
 </html>
