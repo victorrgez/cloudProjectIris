@@ -1,0 +1,26 @@
+version: "1"
+services:
+  mysql:
+    image: victorrgez/cloudprojectirismysql
+    container_name: mysql
+    ports: 0.0.0.0:3306:3306
+    volumes:
+      - statefuldatabase:/var/lib/mysql
+  model:
+    image: victorrgez/cloudprojectirismodel
+    container_name: model
+    ports: 0.0.0.0:3000:3000
+  frontend:
+    image: victorrgez/cloudprojectirisfrontend
+    container_name: frontend
+    ports: 0.0.0.0:5000:5000
+  backend:
+    image: victorrgez/cloudprojectirisbackend
+    container_name: backend
+    depends_on:
+      - model
+      - mysql
+    ports: 0.0.0.0:8080:8080
+    restart: always
+volumes:
+  statefuldatabase:
