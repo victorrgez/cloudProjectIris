@@ -11,7 +11,7 @@ def getlastresults():
     results = None
     try:
         # QUERY SHOULD BE EXECUTED ON BACKEND
-        results = requests.get("http://localhost:8080/lastresults").json()
+        results = requests.get("http://backend:8080/lastresults").json()
 
     except Exception as e:
         print(f" There was an error when executing the query {e}")
@@ -32,7 +32,7 @@ def inputform():
         features = {"sepalLength": sepalLength, "sepalWidth": sepalWidth, "petalLength": petalLength,
                     "petalWidth": petalWidth}
         headers = {"Content-Type": "application/json"}
-        response = requests.post("http://localhost:8080", data=json.dumps(features), headers=headers)
+        response = requests.post("http://backend:8080", data=json.dumps(features), headers=headers)
         data = response.json()
 
         if data['validData']:

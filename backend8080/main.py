@@ -6,7 +6,7 @@ import pymysql
 
 app = Flask(__name__)
 connection = pymysql.connect(
-    host="localhost",
+    host="mysql",
     user="webapp",
     password="webapp",
     database="irisdatabase",
@@ -34,7 +34,7 @@ def predictandinsert():
     # data = json.dumps({"SepalLength":"1.0","SepalWidth":"1.0","PetalLength":"1.0","PetalWidth":"1.0"})
     features = request.get_json()
     headers = {"Content-Type": "application/json"}
-    response = requests.post("http://localhost:3000", data=json.dumps(features), headers=headers)
+    response = requests.post("http://model:3000", data=json.dumps(features), headers=headers)
     results = response.json()
     if results['validData']:
         try:

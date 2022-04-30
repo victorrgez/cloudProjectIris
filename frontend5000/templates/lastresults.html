@@ -10,12 +10,14 @@
 </form>
 
 <h3>ID&emsp;&emsp;SepalLength&emsp;SepalWidth&emsp;PetalLength&emsp;PetalWidth&emsp;PredictedFlower&emsp;Confidence(%)</h3>
-{% for prediction in results %}
-    <p><h3>
-    {% for variable in prediction%}
-        {{variable}}&emsp;&emsp;&emsp;&emsp;&emsp;
+{% if results %}
+    {% for prediction in results %}
+        <p><h3>
+        {% for variable in prediction%}
+            {{variable}}&emsp;&emsp;&emsp;&emsp;&emsp;
+        {% endfor %}
+        </h3></p>
     {% endfor %}
-    </h3></p>
-{% endfor %}
+{% endif %}
 </body>
 </html>
