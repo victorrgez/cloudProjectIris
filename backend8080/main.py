@@ -19,7 +19,7 @@ cursor = connection.cursor()
 @app.route("/lastresults", methods=["GET"])
 def sendlastresults():
     try:
-        lastResultsQuery = 'SELECT * from irisdatabase.iristable ORDER BY ID DESC;'
+        lastResultsQuery = 'SELECT * from irisdatabase.iristable ORDER BY ID DESC LIMIT 50;'
         cursor.execute(lastResultsQuery)
         connection.commit()
         results = cursor.fetchall()
