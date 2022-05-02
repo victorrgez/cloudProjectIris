@@ -24,7 +24,7 @@
 
 <h4> How to run on Docker-Compose: </h4>
 
-1. `git clone https://github.com/vitorrgez/cloudprojectiris.git`
+1. `git clone https://github.com/victorrgez/cloudprojectiris.git`
 2. `cd cloudprojectiris`
 3. `docker-compose up -d`
 
