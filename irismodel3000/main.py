@@ -16,7 +16,7 @@ def parse(receivedDict):
         features = [SepalLength, SepalWidth, PetalLength, PetalWidth]
 
         for value in features:
-            if float(value) < 0:
+            if float(value) <= 0:
                 raise Exception
     except:
         validData= False

@@ -9,10 +9,10 @@
 <h4> How to run on Docker: </h4>
 
 1. `docker network create cloudprojectiris`
-2. `docker run -d -p=0.0.0.0:3306:3306 --name mysql --net cloudprojectiris victorrgez/cloudprojectirismysql`
-3. `docker run -d -p=0.0.0.0:3000:3000 --name model --net cloudprojectiris victorrgez/cloudprojectirismodel`
+2. `docker run -d --name mysql --net cloudprojectiris victorrgez/cloudprojectirismysql`
+3. `docker run -d --name model --net cloudprojectiris victorrgez/cloudprojectirismodel`
 4. `docker run -d -p=0.0.0.0:5000:5000 --name frontend --net cloudprojectiris victorrgez/cloudprojectirisfrontend`
-5. `docker run -d -p=0.0.0.0:8080:8080 --name backend --net cloudprojectiris victorrgez/cloudprojectirisbackend`
+5. `docker run -d --name backend --net cloudprojectiris victorrgez/cloudprojectirisbackend`
 6. Visit http://localhost:5000 or copy the external IP of your machine instead of `localhost`
 
 <h4> How to stop on Docker: </h4>
