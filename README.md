@@ -1,4 +1,10 @@
 <h1> cloudProjectIris </h1>
+<h2> TO DO NEXT </h2>
+
+- [ ] Implement tests
+- [ ] Automate image building and pushing to DockerHub
+- [ ] Automate deployment to CloudRun / GKE
+
 <h3> Project on Google Cloud Platform (GCP) focused on learning how to use Docker and Kubernetes, how to expose Flask Applications and how to separate different tasks when deploying a simple ML model as a structure of microservices: </h3>
 
 - [**Frontend**](./frontend5000) --> The only service with Public IP with which the user can interact.
