@@ -5,12 +5,13 @@
 - [ ] Automate image building and pushing to DockerHub
 - [ ] Automate deployment to CloudRun / GKE
 
+**DOWN BELOW, README OUTDATED, GO back to commit 2b42136 (1st July 2022, main branch) for the commands to work as expected:**
 <h3> Project on Google Cloud Platform (GCP) focused on learning how to use Docker and Kubernetes, how to expose Flask Applications and how to separate different tasks when deploying a simple ML model as a structure of microservices: </h3>
 
-- [**Frontend**](./frontend5000) --> The only service with Public IP with which the user can interact.
-- [**Backend**](./backend8080) --> Handles the connections with the database and the Machine Learning model.
-- [**Mysql**](./mysql3306) --> Serves as a Database that stores the predictions of the Machine Learning model.
-- [**Model**](./irismodel3000) --> Pretrained ML model on the [Iris dataset](https://www.kaggle.com/datasets/uciml/iris)
+- [**Frontend**](src/frontend5000) --> The only service with Public IP with which the user can interact.
+- [**Backend**](src/backend8080) --> Handles the connections with the database and the Machine Learning model.
+- [**Mysql**](src/mysql3306) --> Serves as a Database that stores the predictions of the Machine Learning model.
+- [**Model**](src/irismodel3000) --> Pretrained ML model on the [Iris dataset](https://www.kaggle.com/datasets/uciml/iris)
 
 <h4> How to run on Docker: </h4>
 
