@@ -5,10 +5,18 @@ import os
 import json
 
 sys.path.insert(0, ".")
-from src.frontend5000.main import app
+from src.frontend5000.main import app as frontendAPP
+from src.backend8080.main import app as backendAPP
 
 """
-This file contains all the fixtures used in the tests
+This file contains all the fixtures used in the tests. Index:
+1.Frontend
+2.Backend
+3.IrisModel
+"""
+
+"""
+1. FRONTEND:
 """
 
 
@@ -17,7 +25,7 @@ def normalFrontend():
     """
     Executes the normal Frontend in the background without monkeypatching anything
     """
-    server = Process(target=app.run, args=("0.0.0.0", int(os.environ.get("PORT", 5000))))
+    server = Process(target=frontendAPP.run, args=("0.0.0.0", int(os.environ.get("PORT", 5000))))
     server.start()
     yield
     server.terminate()
@@ -30,6 +38,7 @@ def frontEndMocksLastModelResults(monkeypatch):
     Mocks the connection to backend and to MySQL database and returns fake previous results predicted by the Model.
     The `json` function from `requests.get.json()` in `src.frontend5000.main` is also mocked
     """
+
     class FakeRowsResponse:
         def __init__(self):
             self.fakeRows = [[1, 1.1, 0.1, 3.2, 1.2, "Virginica", 0.90],
@@ -40,7 +49,7 @@ def frontEndMocksLastModelResults(monkeypatch):
             return self.fakeRows
 
     monkeypatch.setattr("src.frontend5000.main.requests.get", lambda url: FakeRowsResponse())
-    server = Process(target=app.run, args=("0.0.0.0", int(os.environ.get("PORT", 5000))))
+    server = Process(target=frontendAPP.run, args=("0.0.0.0", int(os.environ.get("PORT", 5000))))
     server.start()
     yield
     server.terminate()
@@ -81,8 +90,38 @@ def frontEndDoesNotPostInputToBackend(monkeypatch):
 
     monkeypatch.setattr("src.frontend5000.main.requests.post", lambda url, data, headers: ResponseWithJsonMethod(data))
 
-    server = Process(target=app.run, args=("0.0.0.0", int(os.environ.get("PORT", 5000))))
+    server = Process(target=frontendAPP.run, args=("0.0.0.0", int(os.environ.get("PORT", 5000))))
     server.start()
     yield
     server.terminate()
     server.join()
+
+
+"""
+2. BACKEND:
+"""
+
+
+@pytest.fixture
+def normalBackend(monkeypatch):
+    """
+    Creates a normal backend without monkeypatching anything. Connection to MySQL has been moved to
+    `if (__name__ == "__main__"):` so that it does not fail when importing the backend app.
+    """
+    server = Process(target=backendAPP.run, args=("0.0.0.0", int(os.environ.get("PORT", 8080))))
+    server.start()
+    yield
+    server.terminate()
+    server.join()
+
+
+"""
+    class FakeConnection:
+        def __init__(self):
+            pass
+
+        def cursor(self):
+            return self
+
+    monkeypatch.setattr("src.backend8080.main.pymysql.connect", lambda **kwargs: FakeConnection())
+"""

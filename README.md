@@ -1,6 +1,9 @@
 <h1> cloudProjectIris </h1>
 <h2> TO DO NEXT </h2>
 
+- [ ] **IMPORTANT --> Moved the creation of the MySQL connection to `if (__name__ == "__main__"):` in the backend app so
+that it does not raise an Error when importing the backend in test files. Will eventually need to check if this is still
+working as expected or not.**
 - [ ] Implement tests
 - [ ] Automate image building and pushing to DockerHub
 - [ ] Automate deployment to CloudRun / GKE
