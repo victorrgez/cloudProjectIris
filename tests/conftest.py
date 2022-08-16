@@ -25,6 +25,29 @@ def normalFrontend():
 
 
 @pytest.fixture
+def frontEndMocksLastModelResults(monkeypatch):
+    """
+    Mocks the connection to backend and to MySQL database and returns fake previous results predicted by the Model.
+    The `json` function from `requests.get.json()` in `src.frontend5000.main` is also mocked
+    """
+    class FakeRowsResponse:
+        def __init__(self):
+            self.fakeRows = [[1, 1.1, 0.1, 3.2, 1.2, "Virginica", 0.90],
+                             [2, 0.03, 3.1, 1.2, 0.7, "Versicolor", 0.90],
+                             [3, 2.35, 1.1, 0.5, 5.2, "Setosa", 0.85]]
+
+        def json(self):
+            return self.fakeRows
+
+    monkeypatch.setattr("src.frontend5000.main.requests.get", lambda url: FakeRowsResponse())
+    server = Process(target=app.run, args=("0.0.0.0", int(os.environ.get("PORT", 5000))))
+    server.start()
+    yield
+    server.terminate()
+    server.join()
+
+
+@pytest.fixture
 def frontEndDoesNotPostInputToBackend(monkeypatch):
     """
     Instead of sending the input from the Form of the Flask APP to the Backend, we build a fake Backend response.
@@ -47,7 +70,7 @@ def frontEndDoesNotPostInputToBackend(monkeypatch):
                 print("VALID")
                 self.response = {"predictedFlower": "Virginica", "confidence": 0.99, "validData": True}
             else:
-                print ("INVALID")
+                print("INVALID")
                 self.response = {"predictedFlower": "Virginica", "confidence": 0.99, "validData": False}
 
         def json(self):

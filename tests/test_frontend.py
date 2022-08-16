@@ -34,6 +34,17 @@ def test_get_results_catches_connection_exception(normalFrontend):
     assert "Confidence(%)</h3>\n\n</body>" in get("http://localhost:5000/database").text
 
 
+def test_last_results_get_rendered_properly(frontEndMocksLastModelResults):
+    """
+    Checks that the rendering of the last results of the Model stored in MySQL is correct.
+    Connection to backend and then to MySQL is mocked by fake results in the fixture `frontEndMocksLastModelResults`
+    """
+    sleep(0.1)
+    renderedHtml = get("http://localhost:5000/database").text
+    assert "Setosa" in renderedHtml and "Virginica" in renderedHtml and "Versicolor" in renderedHtml
+    assert "3" in renderedHtml and "0.85" in renderedHtml and "0.03" in renderedHtml
+
+
 @pytest.mark.parametrize("sepalLength,sepalWidth,petalLength,petalWidth", [
     (1, 1, 1, 1),
     (2.3, 0.1, 99, 5),
