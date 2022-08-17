@@ -4,7 +4,9 @@
 - [ ] **IMPORTANT --> Moved the creation of the MySQL connection to `if (__name__ == "__main__"):` in the backend app so
 that it does not raise an Error when importing the backend in test files. Will eventually need to check if this is still
 working as expected or not.**
-- [ ] Implement tests
+- [ ] Implement Unit tests for backend and model
+- [ ] Implement Integration Tests for connection to mysql
+- [ ] Implement End-to-End Tests
 - [ ] Automate image building and pushing to DockerHub
 - [ ] Automate deployment to CloudRun / GKE
 
