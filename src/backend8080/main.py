@@ -4,12 +4,29 @@ import requests
 import json
 import pymysql
 
+connection = None
+cursor = None
+
 app = Flask(__name__)
+
+
+def createDatabaseConnection():
+    global connection, cursor
+    connection = pymysql.connect(
+        host="mysql",
+        user="webapp",
+        password="webapp",
+        database="irisdatabase",
+        port=3306
+    )
+    cursor = connection.cursor()
 
 
 @app.route("/lastresults", methods=["GET"])
 def sendlastresults():
     try:
+        if (not cursor):
+            createDatabaseConnection()
         lastResultsQuery = 'SELECT * from irisdatabase.iristable ORDER BY ID DESC LIMIT 50;'
         cursor.execute(lastResultsQuery)
         connection.commit()
@@ -33,6 +50,8 @@ def predictandinsert():
         results = response.json()
         if results['validData']:
             try:
+                if (not cursor):
+                    createDatabaseConnection()
                 templateQuery = f'INSERT INTO irisdatabase.iristable (sepalLength, sepalWidth, petalLength, petalWidth, predictedFlower, confidence) VALUES({features["sepalLength"]}, {features["sepalWidth"]}, {features["petalLength"]}, {features["petalWidth"]}, \'{results["predictedFlower"]}\', {results["confidence"]});'
                 cursor.execute(templateQuery)
                 connection.commit()
@@ -43,13 +62,5 @@ def predictandinsert():
 
 
 if (__name__ == "__main__"):
-    connection = pymysql.connect(
-        host="mysql",
-        user="webapp",
-        password="webapp",
-        database="irisdatabase",
-        port=3306
-    )
-
-    cursor = connection.cursor()
+    createDatabaseConnection()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))

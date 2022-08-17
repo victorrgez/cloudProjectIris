@@ -10,10 +10,83 @@ from src.backend8080.main import app as backendAPP
 
 """
 This file contains all the fixtures used in the tests. Index:
+0.Fake Classes used
 1.Frontend
 2.Backend
 3.IrisModel
 """
+
+"""
+0.Fake Classes used
+"""
+
+
+class FakeConnectionMySQL:
+    """
+    Chreates a fake connection to MySQL that will always return the same rows of the last results when
+    executing the fetchall for any query
+    """
+
+    def __init__(self):
+        self.fakeRows = [[1, 1.1, 0.1, 3.2, 1.2, "Virginica", 0.90],
+                         [2, 0.03, 3.1, 1.2, 0.7, "Versicolor", 0.90],
+                         [3, 2.35, 1.1, 0.5, 5.2, "Setosa", 0.85]]
+
+    def cursor(self):
+        return self
+
+    def execute(self, queryString):
+        pass
+
+    def commit(self):
+        pass
+
+    def fetchall(self):
+        return self.fakeRows
+
+
+class FakeRowsResponse:
+    """
+    When executing an HTTP Request to an enpoint (backend, model, etc), we will return fake rows
+    when doing Response.json()
+    """
+
+    def __init__(self):
+        self.fakeRows = [[1, 1.1, 0.1, 3.2, 1.2, "Virginica", 0.90], [2, 0.03, 3.1, 1.2, 0.7, "Versicolor", 0.90],
+                         [3, 2.35, 1.1, 0.5, 5.2, "Setosa", 0.85]]
+
+    def json(self):
+        return self.fakeRows
+
+
+class ResponseWithJsonMethod:
+    """
+     Fakes the model predictions. Takes the user input and checkes whether they are valid and
+     outputs the prediction when calling Response.json()
+    """
+
+    def __init__(self, data):
+        """
+        Receives a dictonary with the inputs.
+        Creates a `wrongInput` list that will be empty if all input parameters are valid
+        """
+
+        data = json.loads(data)
+        wrongInput = [attribute for attribute in data.values() if attribute is None or float(attribute) <= 0.0]
+
+        if not wrongInput:
+            print("VALID")
+            self.response = {"predictedFlower": "Virginica", "confidence": 0.99, "validData": True}
+        else:
+            print("INVALID")
+            self.response = {"validData": False}
+
+    def json(self):
+        """
+        Response.json() will return the dictionary
+        """
+        return self.response
+
 
 """
 1. FRONTEND:
@@ -39,15 +112,6 @@ def frontEndMocksLastModelResults(monkeypatch):
     The `json` function from `requests.get.json()` in `src.frontend5000.main` is also mocked
     """
 
-    class FakeRowsResponse:
-        def __init__(self):
-            self.fakeRows = [[1, 1.1, 0.1, 3.2, 1.2, "Virginica", 0.90],
-                             [2, 0.03, 3.1, 1.2, 0.7, "Versicolor", 0.90],
-                             [3, 2.35, 1.1, 0.5, 5.2, "Setosa", 0.85]]
-
-        def json(self):
-            return self.fakeRows
-
     monkeypatch.setattr("src.frontend5000.main.requests.get", lambda url: FakeRowsResponse())
     server = Process(target=frontendAPP.run, args=("0.0.0.0", int(os.environ.get("PORT", 5000))))
     server.start()
@@ -64,29 +128,6 @@ def frontEndDoesNotPostInputToBackend(monkeypatch):
     `response.json()` from `src.frontend5000.main` can achieve its goal.
     We also do some quick parameter checking to return in the fake response from Backend if the data is valid or not.
     """
-
-    class ResponseWithJsonMethod:
-        def __init__(self, data):
-            """
-            Receives a dictonary with the inputs.
-            Creates a `wrongInput` list that will be empty if all input parameters are valid
-            """
-
-            data = json.loads(data)
-            wrongInput = [attribute for attribute in data.values() if attribute is None or float(attribute) <= 0.0]
-
-            if not wrongInput:
-                print("VALID")
-                self.response = {"predictedFlower": "Virginica", "confidence": 0.99, "validData": True}
-            else:
-                print("INVALID")
-                self.response = {"predictedFlower": "Virginica", "confidence": 0.99, "validData": False}
-
-        def json(self):
-            """
-            Response.json() will return the dictionary
-            """
-            return self.response
 
     monkeypatch.setattr("src.frontend5000.main.requests.post", lambda url, data, headers: ResponseWithJsonMethod(data))
 
@@ -115,13 +156,17 @@ def normalBackend(monkeypatch):
     server.join()
 
 
-"""
-    class FakeConnection:
-        def __init__(self):
-            pass
-
-        def cursor(self):
-            return self
-
-    monkeypatch.setattr("src.backend8080.main.pymysql.connect", lambda **kwargs: FakeConnection())
-"""
+@pytest.fixture
+def backendNoConnectionMySQLnorModel(monkeypatch):
+    """
+    Creates a backend that does not connect to MySQL nor the ML iris model
+    """
+    features = {"SepalLength": "1.0", "SepalWidth": "1.0", "PetalLength": "1.0", "PetalWidth": "1.0"}
+    monkeypatch.setattr("src.backend8080.main.pymysql.connect", lambda **kwargs: FakeConnectionMySQL())
+    #monkeypatch.setattr("src.backend8080.main.request.get_json", lambda x: features)
+    #monkeypatch.setattr("src.backend8080.main.requests.post", lambda url, data, headers: ResponseWithJsonMethod(data))
+    server = Process(target=backendAPP.run, args=("0.0.0.0", int(os.environ.get("PORT", 8080))))
+    server.start()
+    yield
+    server.terminate()
+    server.join()
