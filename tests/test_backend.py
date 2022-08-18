@@ -1,7 +1,7 @@
 from requests import get, post
 from time import sleep
 import json
-
+import pytest
 
 def test_backend_reachable(normalBackend):
     """
@@ -27,7 +27,7 @@ def test_last_results_returned_to_frontend(backendNoConnectionMySQLnorModel):
     assert json.dumps(fakeResults) == renderedHTML
 
 
-def test_model_prediction_backend_to_frontend_correct_format(backendNoConnectionMySQLnorModel):
+def test_model_prediction_backend_to_frontend_correct_format_valid_input(backendNoConnectionMySQLnorModel):
     """
     Pretends that the frontend is sending some features to the backend to get a prediction from the ML model.
     It returns (in the reponse to the initial request) a fake prediction  that includes the flower and the confidence
@@ -40,3 +40,21 @@ def test_model_prediction_backend_to_frontend_correct_format(backendNoConnection
     headers = {"Content-Type": "application/json"}
     renderedHTML = post("http://localhost:8080/", data=features, headers=headers).text
     assert {"predictedFlower": "Virginica", "confidence": 0.99, "validData": True} == json.loads(renderedHTML)
+
+
+@pytest.mark.parametrize("sepalLength,sepalWidth,petalLength,petalWidth", [
+    (1.0, 1.0, 1.0, 0.0),
+    (None, None, None, None),
+    (-0.1, 2.2, 0.3, 3.5),
+    (3.2, None, -1, 0.4),
+    (1.0, None, 1.0, 0.5)
+])
+def test_model_prediction_backend_to_frontend_correct_format_invalid_input(backendNoConnectionMySQLnorModel,
+                                                                           sepalLength, sepalWidth, petalLength,
+                                                                           petalWidth):
+    sleep(0.1)
+    features = json.dumps({"SepalLength": sepalLength, "SepalWidth": sepalWidth,
+                           "PetalLength": petalLength, "PetalWidth": petalWidth})
+    headers = {"Content-Type": "application/json"}
+    renderedHTML = post("http://localhost:8080/", data=features, headers=headers).text
+    assert {"validData": False} == json.loads(renderedHTML)
