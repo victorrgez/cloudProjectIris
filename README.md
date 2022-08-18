@@ -4,11 +4,13 @@
 - [ ] **IMPORTANT --> Moved the creation of the MySQL connection to `if (__name__ == "__main__"):` in the backend app so
 that it does not raise an Error when importing the backend in test files. Will eventually need to check if this is still
 working as expected or not.**
-- [ ] Implement Unit tests for backend and model
+- [ ] Implement Unit tests for Model
 - [ ] Implement Integration Tests for connection to mysql
 - [ ] Implement End-to-End Tests
 - [ ] Automate image building and pushing to DockerHub
 - [ ] Automate deployment to CloudRun / GKE
+
+[![CI/CD pipeline](https://github.com/victorrgez/cloudProjectIris/actions/workflows/cicd.yml/badge.svg?branch=main)](https://github.com/victorrgez/cloudProjectIris/actions/workflows/cicd.yml)
 
 **DOWN BELOW, README OUTDATED, GO back to commit 2b42136 (1st July 2022, main branch) for the commands to work as expected:**
 <h3> Project on Google Cloud Platform (GCP) focused on learning how to use Docker and Kubernetes, how to expose Flask Applications and how to separate different tasks when deploying a simple ML model as a structure of microservices: </h3>
