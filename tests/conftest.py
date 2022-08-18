@@ -61,8 +61,9 @@ class FakeRowsResponse:
 
 class ResponseWithJsonMethod:
     """
-     Fakes the model predictions. Takes the user input and checkes whether they are valid and
-     outputs the prediction when calling Response.json()
+    Monkeypatching of the Model behaviour. This response to an HTTP request has the content of the model's prediction.
+    Fakes the model predictions. Takes the user input and checkes whether they are valid and
+    outputs the prediction when calling Response.json()
     """
 
     def __init__(self, data):
@@ -126,7 +127,7 @@ def frontEndDoesNotPostInputToBackend(monkeypatch):
     Instead of sending the input from the Form of the Flask APP to the Backend, we build a fake Backend response.
     We monkeypatch `request.post`, and need to create a custom Class so that
     `response.json()` from `src.frontend5000.main` can achieve its goal.
-    We also do some quick parameter checking to return in the fake response from Backend if the data is valid or not.
+    We also do some quick parameter checking to return (in the fake response from Backend) if the data is valid or not.
     """
 
     monkeypatch.setattr("src.frontend5000.main.requests.post", lambda url, data, headers: ResponseWithJsonMethod(data))
@@ -159,12 +160,14 @@ def normalBackend(monkeypatch):
 @pytest.fixture
 def backendNoConnectionMySQLnorModel(monkeypatch):
     """
-    Creates a backend that does not connect to MySQL nor the ML iris model
+    Creates a backend that does not connect to MySQL nor the ML iris model.
+    Instead, it returns fake model predictions (aftert doing some parameter checking to see if the input is valid)
+    It also returns fake previous results from the model when the MySQL fake connection executes the "fetchall" method
+    for a random query that would try to get the last model predictions.
     """
     features = {"SepalLength": "1.0", "SepalWidth": "1.0", "PetalLength": "1.0", "PetalWidth": "1.0"}
     monkeypatch.setattr("src.backend8080.main.pymysql.connect", lambda **kwargs: FakeConnectionMySQL())
-    #monkeypatch.setattr("src.backend8080.main.request.get_json", lambda x: features)
-    #monkeypatch.setattr("src.backend8080.main.requests.post", lambda url, data, headers: ResponseWithJsonMethod(data))
+    monkeypatch.setattr("src.backend8080.main.requests.post", lambda url, data, headers: ResponseWithJsonMethod(data))
     server = Process(target=backendAPP.run, args=("0.0.0.0", int(os.environ.get("PORT", 8080))))
     server.start()
     yield
