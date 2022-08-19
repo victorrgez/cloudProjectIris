@@ -7,7 +7,6 @@ import json
 sys.path.insert(0, ".")
 from src.frontend5000.main import app as frontendAPP
 from src.backend8080.main import app as backendAPP
-from src.irismodel3000.main import app as modelAPP
 
 """
 This file contains all the fixtures used in the tests. Index:
@@ -181,7 +180,10 @@ def normalModel():
     """
     Creates a normal Flask APP that imports the Iris Model.
     It has normal functioning without monkeypatching anything.
+    The importing of the model APP is done here in order not break the other tests
+    that do not have Tensorflow installed.
     """
+    from src.irismodel3000.main import app as modelAPP
     server = Process(target=modelAPP.run, args=("0.0.0.0", int(os.environ.get("PORT", 3000))))
     server.start()
     yield
