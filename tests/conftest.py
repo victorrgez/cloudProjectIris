@@ -7,6 +7,7 @@ import json
 sys.path.insert(0, ".")
 from src.frontend5000.main import app as frontendAPP
 from src.backend8080.main import app as backendAPP
+from src.irismodel3000.main import app as modelAPP
 
 """
 This file contains all the fixtures used in the tests. Index:
@@ -145,7 +146,7 @@ def frontEndDoesNotPostInputToBackend(monkeypatch):
 
 
 @pytest.fixture
-def normalBackend(monkeypatch):
+def normalBackend():
     """
     Creates a normal backend without monkeypatching anything. Connection to MySQL has been moved to
     `if (__name__ == "__main__"):` so that it does not fail when importing the backend app.
@@ -169,6 +170,19 @@ def backendNoConnectionMySQLnorModel(monkeypatch):
     monkeypatch.setattr("src.backend8080.main.pymysql.connect", lambda **kwargs: FakeConnectionMySQL())
     monkeypatch.setattr("src.backend8080.main.requests.post", lambda url, data, headers: ResponseWithJsonMethod(data))
     server = Process(target=backendAPP.run, args=("0.0.0.0", int(os.environ.get("PORT", 8080))))
+    server.start()
+    yield
+    server.terminate()
+    server.join()
+
+
+@pytest.fixture
+def normalModel():
+    """
+    Creates a normal Flask APP that imports the Iris Model.
+    It has normal functioning without monkeypatching anything.
+    """
+    server = Process(target=modelAPP.run, args=("0.0.0.0", int(os.environ.get("PORT", 3000))))
     server.start()
     yield
     server.terminate()

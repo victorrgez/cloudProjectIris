@@ -1,6 +1,11 @@
-from irismodel import IrisModel
 from flask import Flask, request
 import os
+import sys
+sys.path.insert(0, ".")
+from src.irismodel3000.irismodel import IrisModel
+
+
+model = None
 
 
 def parse(receivedDict):
@@ -29,15 +34,22 @@ def parse(receivedDict):
 app = Flask(__name__)
 
 
-@app.route("/", methods=["POST"])
+@app.route("/", methods=["GET", "POST"])
 def predict():
-    receivedDict = request.get_json()
-    features, validData = parse(receivedDict)
-    if validData:
-        predictedFlower, confidence = model.makePrediction(features)
-        return {"predictedFlower": predictedFlower, "confidence": confidence, "validData": True}
+    global model
+    if request.method == "GET":
+        "GET requests works as a health check for testing purposes"
+        return "<html><body>Model IS UP AND RUNNING</body></html>"
     else:
-        return {"validData": False}
+        if (not model):
+            model = IrisModel()
+        receivedDict = request.get_json()
+        features, validData = parse(receivedDict)
+        if validData:
+            predictedFlower, confidence = model.makePrediction(features)
+            return {"predictedFlower": predictedFlower, "confidence": confidence, "validData": True}
+        else:
+            return {"validData": False}
 
 
 if (__name__ == "__main__"):
