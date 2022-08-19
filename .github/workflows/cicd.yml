@@ -5,7 +5,7 @@ on:
       - main
       - cicd
 jobs:
-  RunTests:
+  RunFrontBackTests:
     runs-on: ubuntu-latest
     container:
       image:
@@ -16,5 +16,18 @@ jobs:
       - name: Install test dependencies
         run: pip3 install -r tests/requirements.txt
       - name: Run tests
-        run: pytest -v
-      - run: echo "All tests run succesfully"
+        run: pytest -v --ignore tests/test_irismodel.py
+      - run: echo "All Frontend/Backend tests run succesfully"
+  RunModelTests:
+    runs-on: ubuntu-latest
+    container:
+      image:
+        python:3.9-slim
+    steps:
+      - name: Copy repo files to container
+        uses: actions/checkout@v3
+      - name: Install test dependencies
+        run: pip3 install -r tests/irismodelrequirements.txt
+      - name: Run tests
+        run: pytest -v -W ignore::DeprecationWarning tests/test_irismodel.py
+      - run: echo "All Model tests run succesfully"
