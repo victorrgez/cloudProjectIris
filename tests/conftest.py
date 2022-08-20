@@ -89,6 +89,19 @@ class ResponseWithJsonMethod:
         return self.response
 
 
+class FakeIrisModel:
+    """"
+    Class that always returns the same prediction without actually loading the model.
+    Trust that the inputs parameters pass to the model are correct
+    """
+
+    def __init__(self):
+        pass
+
+    def makePrediction(self, featuresDict):
+        return "Versicolor", 0.85
+
+
 """
 1. FRONTEND:
 """
@@ -175,6 +188,11 @@ def backendNoConnectionMySQLnorModel(monkeypatch):
     server.join()
 
 
+"""
+3. IRIS MODEL:
+"""
+
+
 @pytest.fixture
 def normalModel():
     """
@@ -184,6 +202,33 @@ def normalModel():
     that do not have Tensorflow installed.
     """
     from src.irismodel3000.main import app as modelAPP
+    server = Process(target=modelAPP.run, args=("0.0.0.0", int(os.environ.get("PORT", 3000))))
+    server.start()
+    yield
+    server.terminate()
+    server.join()
+
+
+@pytest.fixture
+def noParsingFeaturesNoPredictingModel(monkeypatch):
+    """
+    Creates a Flask APP for the Iris Model that does not actually import the model (fake prediction is returned)
+    and that does not do parameter checking to check that the logic under the root route (where prediction is done)
+    is correct.
+    """
+    from src.irismodel3000.main import app as modelAPP
+
+    def quickParsingFeaturesNoChecking(featuresDict):
+        try:
+            features = [float(featuresDict[key]) for key in ["sepalLength", "sepalWidth", "petalLength", "petalWidth"]]
+            if min(features) <= 0.0:
+                raise Exception ("Invalid Input")
+        except:
+            return [], False
+        return features, True
+
+    monkeypatch.setattr("src.irismodel3000.main.parse", quickParsingFeaturesNoChecking)
+    monkeypatch.setattr("src.irismodel3000.main.IrisModel", lambda: FakeIrisModel())
     server = Process(target=modelAPP.run, args=("0.0.0.0", int(os.environ.get("PORT", 3000))))
     server.start()
     yield
