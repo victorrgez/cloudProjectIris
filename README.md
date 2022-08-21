@@ -11,7 +11,7 @@ working as expected or not.**
 
 [![CI/CD pipeline](https://github.com/victorrgez/cloudProjectIris/actions/workflows/cicd.yml/badge.svg?branch=main)](https://github.com/victorrgez/cloudProjectIris/actions/workflows/cicd.yml)
 
-**DOWN BELOW, README OUTDATED, GO back to commit 2b42136 (1st July 2022, main branch) for the commands to work as expected:**
+**DOWN BELOW, README OUTDATED, GO back to commit 2b42136 (tagged as 1.0.0) (1st July 2022, main branch) for the commands to work as expected:**
 <h3> Project on Google Cloud Platform (GCP) focused on learning how to use Docker and Kubernetes, how to expose Flask Applications and how to separate different tasks when deploying a simple ML model as a structure of microservices: </h3>
 
 - [**Frontend**](src/frontend5000) --> The only service with Public IP with which the user can interact.
