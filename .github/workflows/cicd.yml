@@ -29,5 +29,6 @@ jobs:
       - name: Install test dependencies
         run: pip3 install -r tests/irismodelrequirements.txt
       - name: Run tests
+        # The following flag gets rids of the deprecation warning of "Imp" module:
         run: pytest -v -W ignore::DeprecationWarning tests/test_irismodel.py
       - run: echo "All Model tests run succesfully"

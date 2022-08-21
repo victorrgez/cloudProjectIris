@@ -3,6 +3,7 @@ from time import sleep
 import json
 import pytest
 
+
 def test_backend_reachable(normalBackend):
     """
     Checks that the backend is up and running. It returns a simple html when doing a get request to the root directory:
@@ -29,7 +30,7 @@ def test_last_results_returned_to_frontend(backendNoConnectionMySQLnorModel):
 
 def test_model_prediction_backend_to_frontend_correct_format_valid_input(backendNoConnectionMySQLnorModel):
     """
-    Pretends that the frontend is sending some features to the backend to get a prediction from the ML model.
+    Pretends that the frontend is sending some valid features to the backend to get a prediction from the ML model.
     It returns (in the reponse to the initial request) a fake prediction  that includes the flower and the confidence
     The inclusion of this prediction in the MySQL database is skipped with monkeypatching as we are only testing and
     we do not have a connection to the database active.
@@ -52,6 +53,11 @@ def test_model_prediction_backend_to_frontend_correct_format_valid_input(backend
 def test_model_prediction_backend_to_frontend_correct_format_invalid_input(backendNoConnectionMySQLnorModel,
                                                                            sepalLength, sepalWidth, petalLength,
                                                                            petalWidth):
+    """
+    Pretends that the frontend is sending invalid features to the backend to get a prediction from the ML model.
+    It returns (in the reponse to the initial request)  a dictionary with `"validData": False`
+    This will help the frontend decide which Template to render
+    """
     sleep(0.1)
     features = json.dumps({"SepalLength": sepalLength, "SepalWidth": sepalWidth,
                            "PetalLength": petalLength, "PetalWidth": petalWidth})

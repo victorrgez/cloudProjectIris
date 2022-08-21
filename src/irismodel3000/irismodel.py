@@ -18,13 +18,13 @@ class IrisModel:
 
     def makePrediction(self, features):
         """
+        Input (list of Floats):
+         [SepalLength, SepalWidth, PetalLength, PetalWidth)
+
         Output (predictedFlower as String, confidence as Float):
          -0 --> Versicolor
          -1 --> Setosa
          -2 --> Virginica
-
-        Input (list of Floats):
-         [SepalLength, SepalWidth, PetalLength, PetalWidth)
         """
 
         predictions = self.model.predict([features])

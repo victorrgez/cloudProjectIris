@@ -178,7 +178,6 @@ def backendNoConnectionMySQLnorModel(monkeypatch):
     It also returns fake previous results from the model when the MySQL fake connection executes the "fetchall" method
     for a random query that would try to get the last model predictions.
     """
-    features = {"SepalLength": "1.0", "SepalWidth": "1.0", "PetalLength": "1.0", "PetalWidth": "1.0"}
     monkeypatch.setattr("src.backend8080.main.pymysql.connect", lambda **kwargs: FakeConnectionMySQL())
     monkeypatch.setattr("src.backend8080.main.requests.post", lambda url, data, headers: ResponseWithJsonMethod(data))
     server = Process(target=backendAPP.run, args=("0.0.0.0", int(os.environ.get("PORT", 8080))))
@@ -190,6 +189,11 @@ def backendNoConnectionMySQLnorModel(monkeypatch):
 
 """
 3. IRIS MODEL:
+"""
+
+
+"""
+3.1 Main.py APP:
 """
 
 
@@ -234,3 +238,10 @@ def noParsingFeaturesNoPredictingModel(monkeypatch):
     yield
     server.terminate()
     server.join()
+
+
+"""
+3.2 Irismodel.py:
+"""
+
+# It has not been needed to use pytest fixtures so far for these tests

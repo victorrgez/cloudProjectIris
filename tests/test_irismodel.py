@@ -1,6 +1,7 @@
 from requests import get, post
 from time import sleep
 from src.irismodel3000.main import parse
+from src.irismodel3000.irismodel import IrisModel
 import pytest
 import json
 
@@ -102,3 +103,53 @@ def test_prediction_for_invalid_input(noParsingFeaturesNoPredictingModel, sepalL
     headers = {"Content-Type": "application/json"}
     outputDict = post("http://localhost:3000", data=json.dumps(inputFeatures), headers=headers).json()
     assert outputDict == {"validData": False}
+
+
+def test_model_initialized_correctly():
+    """
+    Checks that the model.__init__ command loads the model and initialises both conversion dictionaries correctly
+    """
+    model = IrisModel()
+    assert model.varietiesToNumbers == {"Versicolor": 0, "Setosa": 1, "Virginica": 2}
+    assert model.varietiesToNumbers["Virginica"] == 2
+    assert model.numbersToVarieties == {0: "Versicolor", 1: "Setosa", 2: "Virginica"}
+    assert model.numbersToVarieties[1] == "Setosa"
+    assert model.model is not None
+
+
+def test_model_make_prediction():
+    """
+    Checks that the logic of the makePrediction function is correct
+    """
+    import random
+    import numpy as np
+    model = IrisModel()
+    """
+    We use random features each time
+    (we could set a seed for reproducible results but then we would need a for loop
+    to try with different inputs to see that the tests were not passes only by chance)
+    """
+    features = [random.uniform(0.01, 3) for i in range(4)]
+    """
+    model.model.predict is the prediction made directly by Keras without using our Class "makePrediction" method
+    we need to use [0] as the predict method returns a two-dimensional array
+    """
+    rawPredictions = model.model.predict([features])[0]
+    assert len(rawPredictions) == 3
+    """
+    predictedFlower and confidence are returned by "makePrediction" custom method of our IrisModel class
+    confidence is returned as a percentage. Since it is the argmax, it should have at least 1/3 of 100%
+    """
+    predictedFlower, confidence = model.makePrediction(features)
+    assert predictedFlower in ["Versicolor", "Setosa", "Virginica"]
+    assert 100 >= confidence >= 33.3
+    """
+    We compare the prediction of our class, with a different way of computing the confidence to make sure
+    that, if both are the same, our logic is working for sure
+    """
+    assert confidence == float(f"{np.max(rawPredictions)*100:.2f}")
+    """
+    Checks that the predicted Flower is the correct one according to the dictionaries in the __init__ method whose
+    content has already been checked in the previous test
+    """
+    assert predictedFlower == model.numbersToVarieties[np.argmax(rawPredictions)]
