@@ -42,7 +42,7 @@ jobs:
         run: docker build -t mysqlimage src/mysql3306
       - name: Run MySQL image in the background
         run: docker run -d --rm --name mysql -p=0.0.0.0:3306:3306 mysqlimage
-      - name: Install dependences
+      - name: Install dependencies
         run: pip3 install -r tests/requirements.txt
       - name: Run Integrationt tests
-        run: pytest -v tests/test_integrationMySQL.py
+        run: pytest -v -s tests/test_integrationMySQL.py
