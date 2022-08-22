@@ -16,7 +16,8 @@ jobs:
       - name: Install test dependencies
         run: pip3 install -r tests/requirements.txt
       - name: Run tests
-        run: pytest -v --ignore tests/test_irismodel.py
+        # Ignores other tests that are run in different jobs with other requirements:
+        run: pytest -v --ignore=tests/test_irismodel.py --ignore=tests/test_integrationMySQL.py
       - run: echo "All Frontend/Backend tests run succesfully"
   RunModelTests:
     runs-on: ubuntu-latest
@@ -32,3 +33,16 @@ jobs:
         # The following flag gets rids of the deprecation warning of "Imp" module:
         run: pytest -v -W ignore::DeprecationWarning tests/test_irismodel.py
       - run: echo "All Model tests run succesfully"
+  RunMySQLIntegrationTests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Copy repo files to container
+        uses: actions/checkout@v3
+      - name: Build MySQL image
+        run: docker build -t mysqlimage src/mysql3306
+      - name: Run MySQL image in the background
+        run: docker run -d --rm --name mysql -p=0.0.0.0:3306:3306 mysqlimage
+      - name: Install dependences
+        run: pip3 install -r tests/requirements.txt
+      - name: Run Integrationt tests
+        run: pytest -v tests/test_integrationMySQL.py
