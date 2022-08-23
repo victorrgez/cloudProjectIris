@@ -5,9 +5,9 @@ on:
       - main
       - cicd
 env:
-  DOCK_USER: ${{ secrets.DOCK_PASS }}
-  DOCK_PASS: ${{ secrets.DOCK_USER }}
-  
+  DOCK_USER: ${{ secrets.DOCK_USER }}
+  DOCK_PASS: ${{ secrets.DOCK_PASS }}
+
 # Basic tests will be run on both branches. However, Integration and End-To-End tests will be run only on `main` branch
 # when [SRC] is added at the start of the commit message. Same logic is applied to build and push Docker images.
 jobs:
