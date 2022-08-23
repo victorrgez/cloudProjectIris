@@ -4,6 +4,8 @@ on:
     branches:
       - main
       - cicd
+# Basic tests will be run on both branches. However, Integration and End-To-End tests will be run only on `main` branch
+# when [SRC] is added at the start of the commit message. Same logic is applied to build and push Docker images.
 jobs:
   RunFrontBackTests:
     runs-on: ubuntu-latest
@@ -17,7 +19,7 @@ jobs:
         run: pip3 install -r tests/requirements.txt
       - name: Run tests
         # Ignores other tests that are run in different jobs with other requirements:
-        run: pytest -v --ignore=tests/test_irismodel.py --ignore=tests/test_integrationMySQL.py
+        run: pytest -v --ignore=tests/test_irismodel.py --ignore=tests/test_integrationMySQL.py --ignore=tests/test_End2End.py
       - run: echo "All Frontend/Backend tests run succesfully"
   RunModelTests:
     runs-on: ubuntu-latest
@@ -34,6 +36,7 @@ jobs:
         run: pytest -v -W ignore::DeprecationWarning tests/test_irismodel.py
       - run: echo "All Model tests run succesfully"
   RunMySQLIntegrationTests:
+    if: github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, '[SRC]')
     runs-on: ubuntu-latest
     steps:
       - name: Copy repo files to container
@@ -44,5 +47,49 @@ jobs:
         run: docker run -d --rm --name mysql -p=0.0.0.0:3306:3306 mysqlimage
       - name: Install dependencies
         run: pip3 install -r tests/requirements.txt
-      - name: Run Integrationt tests
+      - name: Run Integration tests
         run: pytest -v -s tests/test_integrationMySQL.py
+  BuildAndPushToDockerHub:
+    if: github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, '[SRC]')
+    needs:
+      - RunFrontBackTests
+      - RunModelTests
+      - RunMySQLIntegrationTests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Copy repo files to container
+        uses: actions/checkout@v3
+      - name: Login DockerHub
+        run: docker login -u $DOCK_USER -p $DOCK_PASS;
+      - name: Build Images
+        run: >
+          docker build -t victorrgez/cloudprojectirismysql src/mysql3306;
+          docker build -t victorrgez/cloudprojectirismodel src/irismodel3000;
+          docker build -t victorrgez/cloudprojectirisfrontend src/frontend5000;
+          docker build -t victorrgez/cloudprojectirisbackend src/backend8080;
+      - name: Push Images
+        run: >
+          docker push victorrgez/cloudprojectirismysql;
+          docker push victorrgez/cloudprojectirismodel;
+          docker push victorrgez/cloudprojectirisfrontend;
+          docker push victorrgez/cloudprojectirisbackend;
+  RunEndToEndTests:
+    if: github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, '[SRC]')
+    needs: BuildAndPushToDockerHub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Copy repo files to container
+        uses: actions/checkout@v3
+      - name: Login DockerHub
+        run: docker login -u $DOCK_USER -p $DOCK_PASS;
+      - name: Run Containers
+        run: >
+          docker network create cloudprojectiris;
+          docker run -d --name mysql --net cloudprojectiris victorrgez/cloudprojectirismysql;
+          docker run -d --name model --net cloudprojectiris victorrgez/cloudprojectirismodel;
+          docker run -d -p=0.0.0.0:5000:5000 --name frontend --net cloudprojectiris victorrgez/cloudprojectirisfrontend;
+          docker run -d --name backend --net cloudprojectiris victorrgez/cloudprojectirisbackend;
+      - name: Install dependencies
+        run: pip3 install -r tests/requirements.txt
+      - name: Run End To End tests
+        run: pytest -v tests/test_End2End.py
