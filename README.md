@@ -5,6 +5,7 @@
 that it does not raise an Error when importing the backend in test files. Will eventually need to check if this is still
 working as expected or not.**
 - [ ] Check End to End tests
+- [ ] Make sure CiCD does not trigger CI/CD
 - [ ] Automate deployment to CloudRun / GKE
 
 [![CI/CD pipeline](https://github.com/victorrgez/cloudProjectIris/actions/workflows/cicd.yml/badge.svg?branch=main)](https://github.com/victorrgez/cloudProjectIris/actions/workflows/cicd.yml)
