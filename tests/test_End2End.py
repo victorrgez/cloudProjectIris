@@ -22,7 +22,7 @@ def test_get_empty_database_make_two_predictions_get_last_results():
     # Calling database with only one row:
     nonEmptyResults = requests.get("http://localhost:5000/database").text
     assert ("Setosa" in nonEmptyResults or "Virginica" in nonEmptyResults
-            or "Setosa" in nonEmptyResults) and 1.2 in nonEmptyResults
+            or "Setosa" in nonEmptyResults) and "1.2" in nonEmptyResults
 
     # Second prediction:
     secondPredictedResults = requests.post("http://localhost:5000", data={"sepalLength": 1.5, "sepalWidth": 2.2,
@@ -32,4 +32,4 @@ def test_get_empty_database_make_two_predictions_get_last_results():
     # Calling database with the two rows already added:
     bothPredictedResults = requests.get("http://localhost:5000/database").text
     assert ("Setosa" in bothPredictedResults or "Virginica" in bothPredictedResults
-            or "Setosa" in bothPredictedResults) and 1.1 in bothPredictedResults and 3.5 in bothPredictedResults
+            or "Setosa" in bothPredictedResults) and "1.1" in bothPredictedResults and "3.5" in bothPredictedResults
