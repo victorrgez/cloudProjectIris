@@ -4,7 +4,7 @@
 - [ ] **IMPORTANT --> Moved the creation of the MySQL connection to `if (__name__ == "__main__"):` in the backend app so
 that it does not raise an Error when importing the backend in test files. Will eventually need to check if this is still
 working as expected or not.**
-- [ ] Check End to End tests and Build-PUSH Dockerhub.
+- [ ] Check End to End tests
 - [ ] Automate deployment to CloudRun / GKE
 
 [![CI/CD pipeline](https://github.com/victorrgez/cloudProjectIris/actions/workflows/cicd.yml/badge.svg?branch=main)](https://github.com/victorrgez/cloudProjectIris/actions/workflows/cicd.yml)
