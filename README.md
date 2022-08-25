@@ -2,7 +2,7 @@
 <h2> TO DO NEXT </h2>
 
 - [ ] Automate deployment to CloudRun
-- [ ] Automate deployment to GKE
+- [ ] Automate deployment to GKE (check if there is issues if the services already exist)
 
 [![CI/CD pipeline](https://github.com/victorrgez/cloudProjectIris/actions/workflows/cicd.yml/badge.svg?branch=main)](https://github.com/victorrgez/cloudProjectIris/actions/workflows/cicd.yml)
 

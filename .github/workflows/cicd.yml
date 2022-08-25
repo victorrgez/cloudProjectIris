@@ -7,6 +7,10 @@ on:
 env:
   DOCK_USER: ${{ secrets.DOCK_USER }}
   DOCK_PASS: ${{ secrets.DOCK_PASS }}
+  GCP_GKE_CLUSTER: ${{ secrets.GCP_GKE_CLUSTER }}
+  GCP_GKE_ZONE: ${{ secrets.GCP_GKE_ZONE }}
+  GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
+  SA: ${{ secrets.SA }}
 
 # Basic tests will be run on both branches. However, Integration and End-To-End tests will be run only on `main` branch
 # when [SRC] is added at the start of the commit message. Same logic is applied to build and push Docker images.
@@ -97,3 +101,23 @@ jobs:
         run: pip3 install -r tests/requirements.txt
       - name: Run End To End tests
         run: pytest -v tests/test_End2End.py
+  DeployToGKE:
+    if: github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, '[SRC]')
+    needs: RunEndToEndTests
+    runs-on: ubuntu-latest
+    container:
+      image: google/cloud-sdk
+    steps:
+      - name: Copy repo files to container
+        uses: actions/checkout@v3
+      - name: Activate gcloud
+        run: >
+          echo $SA > remove.json;
+          chmod 400 remove.json;
+          gcloud auth activate-service-account --key-file remove.json;
+          rm remove.json;
+          gcloud config set project $GCP_PROJECT;
+      - name: Activate Kubectl
+        run: gcloud container clusters get-credentials $GCP_GKE_CLUSTER --zone $GCP_GKE_ZONE
+      - name: Deployment to kubernetes
+        run: cd kubernetesYAMLFiles && kubectl apply -f .
