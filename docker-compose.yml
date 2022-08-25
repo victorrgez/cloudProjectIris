@@ -1,4 +1,9 @@
 version: "3"
+# Actually we only need to open the ports for the frontend when using Docker-compose.
+# However, when converting this file to Kubernetes yaml files with `kompose.io`,
+# the rest of the services will not be created unless we have specified the ports.
+# in a real production scenario we would create one yml for docker-compose without the rest of the ports
+# and one for the convertsion with `kompose.io`
 services:
   mysql:
     image: victorrgez/cloudprojectirismysql

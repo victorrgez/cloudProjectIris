@@ -1,14 +1,11 @@
 <h1> cloudProjectIris </h1>
 <h2> TO DO NEXT </h2>
 
-- [ ] **IMPORTANT --> Moved the creation of the MySQL connection to `if (__name__ == "__main__"):` in the backend app so
-that it does not raise an Error when importing the backend in test files. Will eventually need to check if this is still
-working as expected or not.**
-- [ ] Automate deployment to CloudRun / GKE
+- [ ] Automate deployment to CloudRun
+- [ ] Automate deployment to GKE
 
 [![CI/CD pipeline](https://github.com/victorrgez/cloudProjectIris/actions/workflows/cicd.yml/badge.svg?branch=main)](https://github.com/victorrgez/cloudProjectIris/actions/workflows/cicd.yml)
 
-**DOWN BELOW, README OUTDATED, GO back to commit 2b42136 (tagged as 1.0.0) (1st July 2022, main branch) for the commands to work as expected:**
 <h3> Project on Google Cloud Platform (GCP) focused on learning how to use Docker and Kubernetes, how to expose Flask Applications and how to separate different tasks when deploying a simple ML model as a structure of microservices: </h3>
 
 - [**Frontend**](src/frontend5000) --> The only service with Public IP with which the user can interact.
