@@ -1,17 +1,15 @@
-<h1> cloudProjectIris </h1>
-<h2> TO DO NEXT </h2>
-
-- [ ] Automate deployment to CloudRun
-- [ ] Automate deployment to GKE (check if there is issues if the services already exist)
+<h2> Microservices with CI/CD </h2>
 
 [![CI/CD pipeline](https://github.com/victorrgez/cloudProjectIris/actions/workflows/cicd.yml/badge.svg?branch=main)](https://github.com/victorrgez/cloudProjectIris/actions/workflows/cicd.yml)
 
-<h3> Project on Google Cloud Platform (GCP) focused on learning how to use Docker and Kubernetes, how to expose Flask Applications and how to separate different tasks when deploying a simple ML model as a structure of microservices: </h3>
+**v1.0.0**  &rarr; Project on Google Cloud Platform (GCP) focused on learning how to use Docker and Kubernetes, how to expose Flask Applications and how to separate different tasks when deploying a simple ML model as a structure of microservices.
 
-- [**Frontend**](src/frontend5000) --> The only service with Public IP with which the user can interact.
-- [**Backend**](src/backend8080) --> Handles the connections with the database and the Machine Learning model.
-- [**Mysql**](src/mysql3306) --> Serves as a Database that stores the predictions of the Machine Learning model.
-- [**Model**](src/irismodel3000) --> Pretrained ML model on the [Iris dataset](https://www.kaggle.com/datasets/uciml/iris)
+**v2.0.0**  &rarr; Implemented a complete [CI/CD pipeline](.github/workflows/cicd.yml) consisting of *Unit Testing*, *Integration Tests*, *Automatic building and pushing images to DockerHub*, *End-to-End tests* and *Automatic Deployment to a GKE cluster in GCP*. Unit Tests are run on every commit whereas the rest of the steps are only triggered for commits to *Main branch* with *[SRC]* at the start of the commit message
+
+- [**Frontend**](src/frontend5000) &rarr; The only service with Public IP with which the user can interact.
+- [**Backend**](src/backend8080) &rarr; Handles the connections with the database and the Machine Learning model.
+- [**Mysql**](src/mysql3306) &rarr; Serves as a Database that stores the predictions of the Machine Learning model.
+- [**Model**](src/irismodel3000) &rarr; Pretrained ML model on the [Iris dataset](https://www.kaggle.com/datasets/uciml/iris)
 
 <h4> How to run on Docker: </h4>
 

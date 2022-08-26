@@ -28,7 +28,7 @@ jobs:
       - name: Run tests
         # Ignores other tests that are run in different jobs with other requirements:
         run: pytest -v --ignore=tests/test_irismodel.py --ignore=tests/test_integrationMySQL.py --ignore=tests/test_End2End.py
-      - run: echo "All Frontend/Backend tests run succesfully"
+      - run: echo "All Frontend/Backend tests run successfully"
   RunModelTests:
     runs-on: ubuntu-latest
     container:
@@ -42,7 +42,7 @@ jobs:
       - name: Run tests
         # The following flag gets rids of the deprecation warning of "Imp" module:
         run: pytest -v -W ignore::DeprecationWarning tests/test_irismodel.py
-      - run: echo "All Model tests run succesfully"
+      - run: echo "All Model tests run successfully"
   RunMySQLIntegrationTests:
     if: github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, '[SRC]')
     runs-on: ubuntu-latest
@@ -114,7 +114,7 @@ jobs:
         run: >
           printf '%s' "$SA" > remove.json;
           chmod 400 remove.json;
-          gcloud auth activate-service-account --key-file remove.json;
+          gcloud auth activate-service-account --quiet --key-file remove.json;
           rm remove.json;
           gcloud config set project $GCP_PROJECT;
       - name: Activate Kubectl
