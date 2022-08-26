@@ -114,6 +114,7 @@ jobs:
         run: >
           echo "$SA" > remove.json;
           chmod 400 remove.json;
+          ls -lh;
           gcloud auth activate-service-account --key-file remove.json;
           rm remove.json;
           gcloud config set project $GCP_PROJECT;
