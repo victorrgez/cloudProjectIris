@@ -16,7 +16,7 @@ pipeline {
             steps {
                 echo "This is the test stage"
                 script {
-                    def test = 2 + 2 > 3 ? 'cool' : 'not cool'
+                    def test = 2 + 2 > 3 ? 'coolest' : 'not cool'
                     echo test
                 }
             }
