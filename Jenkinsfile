@@ -6,6 +6,7 @@ pipeline {
         stage("build") {
 
             steps {
+                echo "This is the first human step of the pipeline (Check out stage is done automatically!)"
                 echo "This is the build stage"
             }
         }
