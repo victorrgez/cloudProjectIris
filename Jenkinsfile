@@ -11,6 +11,7 @@ pipeline {
                 echo "added automatic scanning every 15 minutes"
                 echo "why it does not get built again automatically?"
                 echo "Now, it is actually working"
+                echo "restart server"
             }
         }
 
